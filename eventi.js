@@ -22,15 +22,22 @@ var Eventi = (function(Eventi, window, document, undefined){
 		}
 	};
 	
-	Eventi.fire = function(event, element || {}, data || {}){
-		if (typeof event == 'string') event = {type: event};
+	Eventi.fire = function(event, element, data){
+		if (typeof event == 'string'){
+			event = {type: event};
+		} 
 		if (ieDom){
 			if (!event.srcElement) event.srcElement = element || this;
 		} else if (!event.target) event.target = element || this;
 		
 		var thisEventListeners = listeners[event.type];
 		for (var i=0, length = thisEventListeners.length; i < length; i++){
-			thisEventListeners[i].call(element, event, data);
+			if (element !== undefined){
+				if (thisEventListeners[i].element === element) thisEventListeners[i].listener.call(element, event, data);
+				else Eventi.fire(event, element.parentNode, data);
+			} else {
+				thisEventListeners[i].listener.call(element, event, data);
+			}
 		}
 	};
 		
