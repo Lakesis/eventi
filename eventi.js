@@ -49,6 +49,15 @@ var Eventi = (function(Eventi, window, document, undefined){
 		
 		if(isEventSupported(event.type)){
 			// DOM events
+			var e =  document.createEvent('Event');
+			e.initEvent(event.type, true, true);
+			if ('dispatchEvent' in document.documentElement){
+				if(typeof element != 'undefined') element.dispatchEvent(e);
+				else window.dispatchEvent(e);
+			} else {
+				if(typeof element != 'undefined') element.fireEvent(e);
+				else window.fireEvent(e);
+			}
 		}else{
 			// Custom events
 			var thisEventListeners = listeners[event.type];

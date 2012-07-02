@@ -29,13 +29,13 @@
 			else console.log("Fire general: " + e.type);
 		});
 		
-		Eventi.add('click', test, function(e){
+		Eventi.add('click', link, function(e){
 			e.preventDefault();
 			console.log("Probando DOM events");
-			Eventi.del('click', test);
+			Eventi.del('click', link);
 		});
 		
-		Eventi.fire('custom', link);
+		Eventi.fire('click', link);
 	/*	Eventi.fire('custom');
 		Eventi.fire('custom', test);
 		
