@@ -25,23 +25,23 @@
 		; 
 		
 		Eventi.add('custom', test, function(e){
-			if (e.target === link) console.log("Fire: " + e.type);
+			if (e.target === test) console.log("Fire: " + e.type);
 			else console.log("Fire general: " + e.type);
 		});
 		
-		Eventi.add('click', link, function(e){
+		Eventi.add('click', test, function(e){
 			e.preventDefault();
 			console.log("Probando DOM events");
-			Eventi.del('click', link);
+		//	Eventi.del('click', link);
 		});
 		
 		Eventi.fire('click', link);
-	/*	Eventi.fire('custom');
+		Eventi.fire('custom');
 		Eventi.fire('custom', test);
 		
 		Eventi.del('custom', test);
 		
-		Eventi.fire('custom', test);*/
+		Eventi.fire('custom', test);
 		
 	</script>
 	

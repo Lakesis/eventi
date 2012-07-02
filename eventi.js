@@ -25,6 +25,7 @@ var Eventi = (function(Eventi, window, document, undefined){
 		return isSupported;
 	}
 	
+	//	ATTACHING METHOD
 	Eventi.add = function(eventType, element, listener){
 		if(isEventSupported(eventType)){
 			// DOM events
@@ -40,6 +41,7 @@ var Eventi = (function(Eventi, window, document, undefined){
 		listeners[eventType].push({'element':element,'listener':listener});
 	};
 	
+	// FIRING METHOD
 	Eventi.fire = function(event, element, data){
 		if (typeof event == 'string'){
 			event = {type: event};
@@ -72,6 +74,7 @@ var Eventi = (function(Eventi, window, document, undefined){
 		}	
 	};
 	
+	// REMOVING METHOD
 	Eventi.del = function(eventType, element){
 		if(isEventSupported(eventType)){
 			// DOM events
