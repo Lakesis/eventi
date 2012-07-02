@@ -69,7 +69,10 @@ var Eventi = (function(Eventi, window, document, undefined){
 			if(typeof element != 'undefined'){
 				var thisEventListeners = listeners[eventType];
 				for (var i=0, length = thisEventListeners.length; i < length; i++){
-					if (thisEventListeners[i].element === element) element.removeEventListener(eventType,thisEventListeners[i].listener);			
+					if (thisEventListeners[i].element === element){
+						if ('addEventListener' in document.documentElement) element.removeEventListener(eventType,thisEventListeners[i].listener);
+						else element.detachEvent(eventType,thisEventListeners[i].listener);
+					}
 				}
 			}
 		}else{		
