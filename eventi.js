@@ -38,18 +38,23 @@ var Eventi = (function(Eventi, window, document, undefined){
 	
 	//	ATTACHING METHOD
 	Eventi.add = function(eventType, element, listener){
+		var ieListener;
 		if(isEventSupported(eventType)){
 			// DOM events
 			if (typeof element != 'undefined'){
 				if ('addEventListener' in document.documentElement) element.addEventListener(eventType, listener, false);
-				else element.attachEvent('on' + eventType, listener, false);
+				else{
+					ieListener = function(){listener.call(element);}; 
+					element.attachEvent('on' + eventType, ieListener, false);
+				}
 			}else console.log('Trying to attatch ' + eventType + ' to an undefined element');
 		}
 		// Custom events
 		if (typeof listeners[eventType] == "undefined"){
 			listeners[eventType] = [];
 		}
-		listeners[eventType].push({'element':element,'listener':listener});
+		listeners[eventType].push({'element':element,'listener': ieListener || listener});
+		console.log(listeners[eventType]);
 	};
 	
 	// FIRING METHOD

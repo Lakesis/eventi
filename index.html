@@ -10,6 +10,10 @@
 	
 	<script src="eventi.js"></script>
 	
+	<style>
+		#test.over {background: blue}
+		#test {background: green}
+	</style>
 
 	
 </head>
@@ -23,7 +27,7 @@
 		var test = document.getElementById('test'),
 		link =  document.getElementById('link')
 		; 
-		
+	/*	
 		Eventi.add('custom', link, function(e){
 			if (e.target === test) console.log("Esto solo tiene que aparecer una vez");
 			else console.log("esto tambien y ademas el primero");
@@ -32,6 +36,17 @@
 		Eventi.add('click', link, function(e){
 			e.preventDefault();
 			console.log("Probando DOM events");
+		});*/
+		
+		Eventi.add('mouseover', test, function(e){
+			this.className = 'over';
+			console.log(this);
+		});
+		
+		
+		Eventi.add('mouseout', test, function(e){
+			this.className = '';
+			Eventi.del('mouseover');
 		});
 		
 	/*	Eventi.fire('click', link);
@@ -39,7 +54,6 @@
 		console.log("intermission")
 		Eventi.fire('click', link);
 		Eventi.fire('custom', test);*/
-		
 		
 	</script>
 	
