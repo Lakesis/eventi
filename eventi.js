@@ -61,12 +61,12 @@ var Eventi = (function(Eventi, window, document, undefined){
 		
 		if(isEventSupported(event.type)){
 			// DOM events
-			if ('dispatchEvent' in document.documentElement){
+			if ('dispatchEvent' in document.documentElement){	// Non IE
 				var e =  document.createEvent('Event');
 				e.initEvent(event.type, true, true);
 				if(typeof element != 'undefined') element.dispatchEvent(e);
 				else document.dispatchEvent(e);
-			} else {
+			} else {											// IE
 				var e =  document.createEventObject('Event');
 				if(typeof element != 'undefined') element.fireEvent('on'+event.type, e);
 				else document.fireEvent('on'+event.type, e);
@@ -76,7 +76,7 @@ var Eventi = (function(Eventi, window, document, undefined){
 			var thisEventListeners = listeners[event.type],
 			currentHandler
 			;
-			if('addEventListener' in document.documentElement){
+			if('addEventListener' in document.documentElement){		// Event handler execution wrapping (Non IE)
 				document.addEventListener('eventWrapper', function(e){
 					currentHandler.call(event.target, event, data);
 					this.removeEventListener('eventWrapper',arguments.callee, false);
@@ -86,7 +86,7 @@ var Eventi = (function(Eventi, window, document, undefined){
 					e.initEvent('eventWrapper', false, false);
 					document.dispatchEvent(e);
 				};
-				for (var i=0, length = thisEventListeners.length; i < length; i++){		
+				for (var i=0, length = thisEventListeners.length; i < length; i++){	// Handler iteration
 					if (typeof element != 'undefined'){
 						if (thisEventListeners[i].element === element){
 							currentHandler = thisEventListeners[i].listener;
