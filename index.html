@@ -25,8 +25,8 @@
 		; 
 		
 		Eventi.add('custom', test, function(e){
-			if (e.target === test) console.log("Fire: " + e.type);
-			else console.log("Fire general: " + e.type);
+			if (e.target === test) console.log("Esto solo tiene que aparecer una vez");
+			else console.log("esto tambien y ademas el primero");
 		});
 		
 		Eventi.add('click', test, function(e){
@@ -37,11 +37,13 @@
 		
 		Eventi.fire('click', link);
 		Eventi.fire('custom');
+		console.log("intermission")
+		Eventi.fire('click', link);
 		Eventi.fire('custom', test);
 		
-		Eventi.del('custom', test);
+	/*	Eventi.del('custom', test);
 		
-		Eventi.fire('custom', test);
+		Eventi.fire('custom', test);*/
 		
 	</script>
 	

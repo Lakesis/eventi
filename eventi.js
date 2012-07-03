@@ -1,6 +1,14 @@
 /*	
 	http://www.youtube.com/watch?v=kHML8pMfPGA
 */
+/*
+if (typeof window.Event.preventDefault != 'func'){
+
+	window.Event.prototype.preventDefault = function(e){
+		e.returnValue = false;
+	};
+}
+*/
 
 var Eventi = (function(Eventi, window, document, undefined){
 	
@@ -46,30 +54,48 @@ var Eventi = (function(Eventi, window, document, undefined){
 		if (typeof event == 'string'){
 			event = {type: event};
 		} 
-		if (!event.target) event.target = element || this;
-		else if (!event.srcElement) event.srcElement = element || this;
+		if (!event.target || !event.srcElement) event.target =  event.srcElement = element || this;
 		
 		if(isEventSupported(event.type)){
 			// DOM events
-			var e =  document.createEvent('Event');
-			e.initEvent(event.type, true, true);
 			if ('dispatchEvent' in document.documentElement){
+				var e =  document.createEvent('Event');
+				e.initEvent(event.type, true, true);
 				if(typeof element != 'undefined') element.dispatchEvent(e);
-				else window.dispatchEvent(e);
+				else document.dispatchEvent(e);
 			} else {
-				if(typeof element != 'undefined') element.fireEvent(e);
-				else window.fireEvent(e);
+				var e =  document.createEventObject('Event');
+				if(typeof element != 'undefined') element.fireEvent('on'+event.type, e);
+				else document.fireEvent('on'+event.type, e);
 			}
 		}else{
 			// Custom events
-			var thisEventListeners = listeners[event.type];
-			for (var i=0, length = thisEventListeners.length; i < length; i++){
-				if (typeof element != 'undefined'){
-					if (thisEventListeners[i].element === element) thisEventListeners[i].listener.call(element, event, data);
-					else if(element.parentNode !== null ) Eventi.fire(event, element.parentNode, data);	// Event bubbling
-				} else {
-					thisEventListeners[i].listener.call(this, event, data);
+			var thisEventListeners = listeners[event.type],
+			currentHandler
+			;
+			if('addEventListener' in document.documentElement){
+				document.addEventListener('eventWrapper', function(e){
+					currentHandler.call(event.target, event, data);
+					this.removeEventListener('eventWrapper',arguments.callee, false);
+				});		
+				var fireWrapper = function(){
+					var e =  document.createEvent('Event');
+					e.initEvent('eventWrapper', false, false);
+					document.dispatchEvent(e);
+				};
+				for (var i=0, length = thisEventListeners.length; i < length; i++){		
+					if (typeof element != 'undefined'){
+						if (thisEventListeners[i].element === element){
+							currentHandler = thisEventListeners[i].listener;
+							fireWrapper();
+						} else if(element.parentNode !== null ) Eventi.fire(event, element.parentNode, data);	// Event bubbling
+					} else {
+						currentHandler = thisEventListeners[i].listener;
+						fireWrapper();
+					}
 				}
+			}else{
+			
 			}
 		}	
 	};
