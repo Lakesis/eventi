@@ -86,45 +86,56 @@ var Eventi = (function(Eventi, window, document, undefined){
 					e.initEvent('eventWrapper', false, false);
 					document.dispatchEvent(e);
 				};
-				for (var i=0, length = thisEventListeners.length; i < length; i++){	// Handler iteration
-					if (typeof element != 'undefined'){
-						if (thisEventListeners[i].element === element){
-							currentHandler = thisEventListeners[i].listener;
-							fireWrapper();
-						} else if(element.parentNode !== null ) Eventi.fire(event, element.parentNode, data);	// Event bubbling
-					} else {
+				
+			}else{
+				document.documentElement.eventWrapper = 0; 
+				document.documentElement.attachEvent("onpropertychange", function(e) {
+					if (e.propertyName == "eventWrapper") {
+						currentHandler.call(event.target, event, data);
+						document.documentElement.detachEvent("onpropertychange",arguments.callee);
+					}
+				});
+				var fireWrapper = function() {
+					document.documentElement.eventWrapper++;
+				};
+			}
+			for (var i=0, length = thisEventListeners.length; i < length; i++){	// Handler iteration 
+				if (typeof element != 'undefined'){
+					if (thisEventListeners[i].element === element){
 						currentHandler = thisEventListeners[i].listener;
 						fireWrapper();
-					}
+					} else if(element.parentNode !== null ) Eventi.fire(event, element.parentNode, data);	// Event bubbling
+				} else {
+					currentHandler = thisEventListeners[i].listener;
+					fireWrapper();
 				}
-			}else{
-			
 			}
 		}	
 	};
 	
 	// REMOVING METHOD
 	Eventi.del = function(eventType, element){
+		var thisEventListeners = listeners[eventType];
 		if(isEventSupported(eventType)){
-			// DOM events
-			if(typeof element != 'undefined'){
-				var thisEventListeners = listeners[eventType];
-				for (var i=0, length = thisEventListeners.length; i < length; i++){
+		// DOM events
+			for (var i=0, length = thisEventListeners.length; i < length; i++){
+				if(typeof element != 'undefined'){
 					if (thisEventListeners[i].element === element){
-						if ('addEventListener' in document.documentElement) element.removeEventListener(eventType,thisEventListeners[i].listener);
-						else element.detachEvent(eventType,thisEventListeners[i].listener);
+						if ('removeEventListener' in document.documentElement) element.removeEventListener(eventType,thisEventListeners[i].listener);
+						else element.detachEvent('on' + eventType,thisEventListeners[i].listener);
 					}
+				} else {
+					if ('removeEventListener' in document.documentElement) thisEventListeners[i].element.removeEventListener(eventType,thisEventListeners[i].listener);
+					else thisEventListeners[i].element.detachEvent('on' + eventType,thisEventListeners[i].listener);
 				}
 			}
-		}else{		
-			// Custom events
-			var thisEventListeners = listeners[eventType];
-			if(typeof element == 'undefined'){
-				thisEventListeners.splice(0, thisEventListeners.length);
-			} else {
-				for (var i=0, length = thisEventListeners.length; i < length; i++){
-					if (thisEventListeners[i].element === element) thisEventListeners.splice(i,1);				
-				}
+		}		
+		// Custom events
+		if(typeof element == 'undefined'){					// No target element removes all events attached to the type
+			thisEventListeners = []; 
+		} else {
+			for (var i=0, length = thisEventListeners.length; i < length; i++){
+				if (thisEventListeners[i].element === element) thisEventListeners.splice(i,1);				
 			}
 		}
 	};
