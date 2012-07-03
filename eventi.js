@@ -62,7 +62,9 @@ var Eventi = (function(Eventi, window, document, undefined){
 			event = {type: event};
 		} 
 		if (!event.target || !event.srcElement){ event.target =  event.srcElement = element || this;}
+		if (!event.currentTarget) event.currentTarget = event.target;
 		event.preventDefault = function(){}; // TODO
+		event.stopPropagation = function(){}; // TODO
 		
 	/*	if(isEventSupported(event.type)){
 			// DOM events
@@ -105,10 +107,13 @@ var Eventi = (function(Eventi, window, document, undefined){
 			}
 			for (var i=0, length = thisEventListeners.length; i < length; i++){	// Handler iteration 
 				if (typeof element != 'undefined'){
-					if (thisEventListeners[i].element === element){
+					if (thisEventListeners[i].element === event.currentTarget){
 						currentHandler = thisEventListeners[i].listener;
 						fireWrapper();
-					} else if(element.parentNode !== null ) Eventi.fire(event, element.parentNode, data);	// Event bubbling
+					} else if(element.parentNode !== null ){
+						event.currentTarget = element.parentNode;
+						Eventi.fire(event, element.parentNode, data);	// Event bubbling
+					}
 				} else {
 					currentHandler = thisEventListeners[i].listener;
 					fireWrapper();
