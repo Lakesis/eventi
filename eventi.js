@@ -1,14 +1,17 @@
 /*	
 	http://www.youtube.com/watch?v=kHML8pMfPGA
 */
-/*
-if (typeof window.Event.preventDefault != 'func'){
 
-	window.Event.prototype.preventDefault = function(e){
-		e.returnValue = false;
+if (typeof window.Event.prototype.preventDefault != 'function'){
+	window.Event.prototype.preventDefault = function(){
+		this.returnValue = false;
 	};
 }
-*/
+if (typeof window.Event.prototype.stopPropagation != 'function'){
+	window.Event.prototype.stopPropagation = function(){
+		this.cancelBubble = true;
+	};
+}
 
 var Eventi = (function(Eventi, window, document, undefined){
 	
