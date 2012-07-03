@@ -54,7 +54,6 @@ var Eventi = (function(Eventi, window, document, undefined){
 			listeners[eventType] = [];
 		}
 		listeners[eventType].push({'element':element,'listener': ieListener || listener});
-		console.log(listeners[eventType]);
 	};
 	
 	// FIRING METHOD
@@ -62,9 +61,10 @@ var Eventi = (function(Eventi, window, document, undefined){
 		if (typeof event == 'string'){
 			event = {type: event};
 		} 
-		if (!event.target || !event.srcElement) event.target =  event.srcElement = element || this;
+		if (!event.target || !event.srcElement){ event.target =  event.srcElement = element || this;}
+		event.preventDefault = function(){}; // TODO
 		
-		if(isEventSupported(event.type)){
+	/*	if(isEventSupported(event.type)){
 			// DOM events
 			if ('dispatchEvent' in document.documentElement){	// Non IE
 				var e =  document.createEvent('Event');
@@ -76,7 +76,7 @@ var Eventi = (function(Eventi, window, document, undefined){
 				if(typeof element != 'undefined') element.fireEvent('on'+event.type, e);
 				else document.fireEvent('on'+event.type, e);
 			}
-		}else{
+		}else{*/
 			// Custom events
 			var thisEventListeners = listeners[event.type],
 			currentHandler
@@ -91,7 +91,6 @@ var Eventi = (function(Eventi, window, document, undefined){
 					e.initEvent('eventWrapper', false, false);
 					document.dispatchEvent(e);
 				};
-				
 			}else{
 				document.documentElement.eventWrapper = 0; 
 				document.documentElement.attachEvent("onpropertychange", function(e) {
@@ -115,7 +114,7 @@ var Eventi = (function(Eventi, window, document, undefined){
 					fireWrapper();
 				}
 			}
-		}	
+		//}	
 	};
 	
 	// REMOVING METHOD
