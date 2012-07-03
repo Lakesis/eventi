@@ -63,8 +63,9 @@ var Eventi = (function(Eventi, window, document, undefined){
 		} 
 		if (!event.target || !event.srcElement){ event.target =  event.srcElement = element || this;}
 		if (!event.currentTarget) event.currentTarget = event.target;
+		if (!event.bubbling) event.bubbling = true;
 		event.preventDefault = function(){}; // TODO
-		event.stopPropagation = function(){}; // TODO
+		event.stopPropagation = function(){ this.bubbling = false}; // Turn into a class?
 		
 	/*	if(isEventSupported(event.type)){
 			// DOM events
@@ -85,19 +86,19 @@ var Eventi = (function(Eventi, window, document, undefined){
 			;
 			if('addEventListener' in document.documentElement){		// Event handler execution wrapping (Non IE)
 				document.addEventListener('eventWrapper', function(e){
-					currentHandler.call(event.target, event, data);
-					this.removeEventListener('eventWrapper',arguments.callee, false);
+					currentHandler.call(event.currentTarget, event, data);
+					document.removeEventListener('eventWrapper',arguments.callee, false);
 				});		
 				var fireWrapper = function(){
 					var e =  document.createEvent('Event');
 					e.initEvent('eventWrapper', false, false);
 					document.dispatchEvent(e);
 				};
-			}else{
+			} else{
 				document.documentElement.eventWrapper = 0; 
 				document.documentElement.attachEvent("onpropertychange", function(e) {
 					if (e.propertyName == "eventWrapper") {
-						currentHandler.call(event.target, event, data);
+						currentHandler.call(event.currentTarget, event, data);
 						document.documentElement.detachEvent("onpropertychange",arguments.callee);
 					}
 				});
@@ -110,9 +111,10 @@ var Eventi = (function(Eventi, window, document, undefined){
 					if (thisEventListeners[i].element === event.currentTarget){
 						currentHandler = thisEventListeners[i].listener;
 						fireWrapper();
-					} else if(element.parentNode !== null ){
+					} 
+					if (element.parentNode !== null && event.bubbling){ // Event bubbling
 						event.currentTarget = element.parentNode;
-						Eventi.fire(event, element.parentNode, data);	// Event bubbling
+						Eventi.fire(event, element.parentNode, data);	
 					}
 				} else {
 					currentHandler = thisEventListeners[i].listener;

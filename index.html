@@ -28,14 +28,16 @@
 		link =  document.getElementById('link')
 		; 
 		
-		Eventi.add('custom', test, function(e){
+	/*	Eventi.add('custom', test, function(e){
 			if (e.target === link) console.log("Esto solo tiene que aparecer una vez");
 			else console.log("esto tambien y ademas el primero");
-		});
+		});*/
 		
-		Eventi.add('click', link, function(e){
+		Eventi.add('custom', test, function(e){
 			e.preventDefault();
-			console.log("Probando DOM events");
+			e.stopPropagation();
+			console.log("Target :" + e.target);
+			console.log("Current target :" + e.currentTarget);
 		});
 		
 	/*	Eventi.add('mouseover', test, function(e){
@@ -49,11 +51,11 @@
 			Eventi.del('mouseover');
 		});*/
 		
-		Eventi.fire('click', link);
+	/*	Eventi.fire('click', link);
 		Eventi.fire('custom');
 		console.log("intermission")
-		Eventi.fire('click', link);
-		Eventi.fire('custom', test);
+		Eventi.fire('click', link);*/
+		Eventi.fire('custom', link); 
 		
 	</script>
 	
