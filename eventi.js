@@ -60,12 +60,12 @@ var Eventi = (function(Eventi, window, document, undefined){
 	Eventi.fire = function(event, element, data){
 		if (typeof event == 'string'){
 			event = {type: event};
+			event.target =  event.srcElement = element || this;
+			event.currentTarget = event.target;
+			event.bubbling = true;
+			event.preventDefault = function(){}; // TODO
+			event.stopPropagation = function(){ this.bubbling = false}; // Turn into a class?
 		} 
-		if (!event.target || !event.srcElement){ event.target =  event.srcElement = element || this;}
-		if (!event.currentTarget) event.currentTarget = event.target;
-		if (!event.bubbling) event.bubbling = true;
-		event.preventDefault = function(){}; // TODO
-		event.stopPropagation = function(){ this.bubbling = false}; // Turn into a class?
 		
 	/*	if(isEventSupported(event.type)){
 			// DOM events
@@ -85,24 +85,26 @@ var Eventi = (function(Eventi, window, document, undefined){
 			currentHandler
 			;
 			if('addEventListener' in document.documentElement){		// Event handler execution wrapping (Non IE)
-				document.addEventListener('eventWrapper', function(e){
-					currentHandler.call(event.currentTarget, event, data);
-					document.removeEventListener('eventWrapper',arguments.callee, false);
-				});		
 				var fireWrapper = function(){
+					document.addEventListener('eventWrapper', function(e){ 
+						currentHandler.call(event.currentTarget, event, data);
+						document.removeEventListener('eventWrapper',arguments.callee, false);
+					});		
+				
 					var e =  document.createEvent('Event');
 					e.initEvent('eventWrapper', false, false);
 					document.dispatchEvent(e);
 				};
 			} else{
-				document.documentElement.eventWrapper = 0; 
-				document.documentElement.attachEvent("onpropertychange", function(e) {
-					if (e.propertyName == "eventWrapper") {
-						currentHandler.call(event.currentTarget, event, data);
-						document.documentElement.detachEvent("onpropertychange",arguments.callee);
-					}
-				});
 				var fireWrapper = function() {
+					document.documentElement.eventWrapper = 0; 
+					document.documentElement.attachEvent("onpropertychange", function(e) {
+						if (e.propertyName == "eventWrapper") {
+							currentHandler.call(event.currentTarget, event, data);
+							document.documentElement.detachEvent("onpropertychange",arguments.callee);
+						}
+					});
+				
 					document.documentElement.eventWrapper++;
 				};
 			}
@@ -112,7 +114,7 @@ var Eventi = (function(Eventi, window, document, undefined){
 						currentHandler = thisEventListeners[i].listener;
 						fireWrapper();
 					} 
-					if (element.parentNode !== null && event.bubbling){ // Event bubbling
+					if (element.parentNode !== null && event.bubbling){ // Event bubbling 
 						event.currentTarget = element.parentNode;
 						Eventi.fire(event, element.parentNode, data);	
 					}
