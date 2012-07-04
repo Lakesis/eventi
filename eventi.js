@@ -83,7 +83,7 @@ var Eventi = (function(Eventi, window, document, undefined){
 	Eventi.fire = function(event, element, data){
 		if (typeof event == 'string'){
 			event = {type: event};
-			event.target =  event.srcElement = element || this;
+			event.target =  event.srcElement = element || document;
 			event.currentTarget = event.target;
 			event.bubbling = true;
 			event.preventDefault = function(){}; // TODO?
@@ -98,6 +98,7 @@ var Eventi = (function(Eventi, window, document, undefined){
 				} 
 				if (element.parentNode !== null && event.bubbling){ // Event bubbling 
 					event.currentTarget = element.parentNode;
+					if (event.currentTarget === document.body) event.stopPropagation();
 					Eventi.fire(event, element.parentNode, data);	
 				}
 			} else {

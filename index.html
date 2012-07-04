@@ -25,8 +25,8 @@
 	
 	<script>
 		var test = document.getElementById('test'),
-		link =  document.getElementById('link'),
-		body =  document.getElementById('body')
+		link =  document.getElementById('link')
+		//body =  document.getElementById('body')
 		; 
 		
 	/*	Eventi.add('custom', test, function(e){
@@ -34,7 +34,7 @@
 			else console.log("esto tambien y ademas el primero");
 		});*/
 		
-		Eventi.add('custom', body, function(e){
+		Eventi.add('custom', test, function(e){
 		//	e.preventDefault();
 		//	e.stopPropagation();
 			console.log("Target :" + e.target);
@@ -57,6 +57,7 @@
 		console.log("intermission")
 		Eventi.fire('click', link);*/
 		Eventi.fire('custom', link); 
+		//Eventi.fire('custom');
 		
 	</script>
 	
