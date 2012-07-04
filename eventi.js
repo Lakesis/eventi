@@ -2,7 +2,7 @@
 	http://www.youtube.com/watch?v=kHML8pMfPGA
 */
 
-if (typeof window.Event.prototype.preventDefault != 'function'){
+if (typeof window.Event.prototype.preventDefault != 'function'){	// IE
 	window.Event.prototype.preventDefault = function(){
 		this.returnValue = false;
 	};
@@ -84,19 +84,16 @@ var Eventi = (function(Eventi, window, document, undefined){
 			var thisEventListeners = listeners[event.type],
 			currentHandler
 			;
-			if('addEventListener' in document.documentElement){		// Event handler execution wrapping (Non IE)
-				var fireWrapper = function(){
+			var fireWrapper = function() {
+				if('addEventListener' in document.documentElement){		// Event handler execution wrapping (Non IE)
 					document.addEventListener('eventWrapper', function(e){ 
 						currentHandler.call(event.currentTarget, event, data);
 						document.removeEventListener('eventWrapper',arguments.callee, false);
 					});		
-				
 					var e =  document.createEvent('Event');
 					e.initEvent('eventWrapper', false, false);
 					document.dispatchEvent(e);
-				};
-			} else{
-				var fireWrapper = function() {
+				} else{													// Event handler execution wrapping (IE)
 					document.documentElement.eventWrapper = 0; 
 					document.documentElement.attachEvent("onpropertychange", function(e) {
 						if (e.propertyName == "eventWrapper") {
@@ -104,10 +101,9 @@ var Eventi = (function(Eventi, window, document, undefined){
 							document.documentElement.detachEvent("onpropertychange",arguments.callee);
 						}
 					});
-				
 					document.documentElement.eventWrapper++;
-				};
-			}
+				}
+			};
 			for (var i=0, length = thisEventListeners.length; i < length; i++){	// Handler iteration 
 				if (typeof element != 'undefined'){
 					if (thisEventListeners[i].element === event.currentTarget){
